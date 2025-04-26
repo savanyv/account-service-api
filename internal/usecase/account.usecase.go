@@ -12,6 +12,7 @@ import (
 
 type AccountUsecase interface {
 	Register(req *dtos.RegisterRequest) (*dtos.RegisterResponse, error)
+	Deposit(req *dtos.DepositRequest) (*dtos.DepositResponse, error)
 }
 
 type accountUsecase struct {
@@ -59,6 +60,45 @@ func (u *accountUsecase) Register(req *dtos.RegisterRequest) (*dtos.RegisterResp
 	// response
 	resp := &dtos.RegisterResponse{
 		AccountNo: accountNo,
+	}
+
+	return resp, nil
+}
+
+func (u *accountUsecase) Deposit(req *dtos.DepositRequest) (*dtos.DepositResponse, error) {
+	// find customer
+	customer, err := u.accountRepo.FindByAccountNo(req.AccountNo)
+	if err != nil {
+		utils.LogError("USECASE", "Failed to find customer: %v", err)
+		return nil, err
+	}
+
+	// create transaction
+	transaction := &models.Transaction{
+		AccountNo: req.AccountNo,
+		Type: "deposit",
+		Amount: req.Amount,
+		FinalBalance: customer.Balance + req.Amount,
+		CreatedAt: time.Now(),
+	}
+
+	// save transaction
+	if err := u.transactionRepo.Create(transaction); err != nil {
+		utils.LogError("USECASE", "Failed to create transaction: %v", err)
+		return nil, err
+	}
+
+	// update customer balance
+	customer.Balance += req.Amount
+	if err := u.accountRepo.Update(customer); err != nil {
+		utils.LogError("USECASE", "Failed to update customer: %v", err)
+		return nil, err
+	}
+
+	// response
+	resp := &dtos.DepositResponse{
+		AccountNo: customer.AccountNo,
+		Balance: customer.Balance,
 	}
 
 	return resp, nil

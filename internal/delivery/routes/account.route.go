@@ -15,4 +15,5 @@ func accountRoutes(app fiber.Router) {
 	handler := handlers.NewAccountHandler(usecase)
 
 	app.Post("/register", handler.Register)
+	app.Post("/deposit", handler.Deposit)
 }

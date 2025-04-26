@@ -9,3 +9,13 @@ type RegisterRequest struct {
 type RegisterResponse struct {
 	AccountNo string `json:"account_no"`
 }
+
+type DepositRequest struct {
+	AccountNo string `json:"account_no" validate:"required"`
+	Amount    int64  `json:"amount" validate:"required"`
+}
+
+type DepositResponse struct {
+	AccountNo string `json:"account_no"`
+	Balance int64 `json:"balance"`
+}
