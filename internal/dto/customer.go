@@ -29,3 +29,7 @@ type WithdrawResponse struct {
 	AccountNo string `json:"account_no"`
 	Balance int64 `json:"balance"`
 }
+
+type BalanceResponse struct {
+	Balance int64 `json:"balance"`
+}

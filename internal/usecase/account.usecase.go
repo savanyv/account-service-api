@@ -14,6 +14,7 @@ type AccountUsecase interface {
 	Register(req *dtos.RegisterRequest) (*dtos.RegisterResponse, error)
 	Deposit(req *dtos.DepositRequest) (*dtos.DepositResponse, error)
 	Withdraw(req *dtos.WithdrawRequest) (*dtos.WithdrawResponse, error)
+	GetBalance(accountNo string) (*dtos.BalanceResponse, error)
 }
 
 type accountUsecase struct {
@@ -138,6 +139,22 @@ func (u *accountUsecase) Withdraw(req *dtos.WithdrawRequest) (*dtos.WithdrawResp
 	// response
 	resp := &dtos.WithdrawResponse{
 		AccountNo: customer.AccountNo,
+		Balance: customer.Balance,
+	}
+
+	return resp, nil
+}
+
+func (u *accountUsecase) GetBalance(accountNo string) (*dtos.BalanceResponse, error) {
+	// find customer
+	customer, err := u.accountRepo.FindByAccountNo(accountNo)
+	if err != nil {
+		utils.LogError("USECASE", "Failed to find customer: %v", err)
+		return nil, err
+	}
+
+	// response
+	resp := &dtos.BalanceResponse{
 		Balance: customer.Balance,
 	}
 

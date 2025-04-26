@@ -111,3 +111,22 @@ func (h *AccountHandler) Withdraw(c *fiber.Ctx) error {
 		"remark": "Withdraw successful",
 	})
 }
+
+func (h *AccountHandler) GetBalance(c *fiber.Ctx) error {
+	accountNo := c.Params("account_no")
+
+	resp, err := h.usecase.GetBalance(accountNo)
+	if err != nil {
+		utils.LogError("HANDLER", "Failed to get balance: %v", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"remark": "Failed to get balance",
+		})
+	}
+
+	utils.LogInfo("HANDLER", "Get balance successful: %s", accountNo)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": resp,
+		"remark": "Get balance successful",
+	})
+
+}
