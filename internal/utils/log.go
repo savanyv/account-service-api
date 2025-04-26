@@ -38,11 +38,7 @@ func LogCritical(context, msg string, args ...any) {
 
 func format(msg string, args ...any) string {
 	if len(args) > 0 {
-		return sprintf(msg, args...)
+		return fmt.Sprintf(msg, args...)
 	}
 	return msg
-}
-
-func sprintf(msg string, args ...any) string {
-	return fmt.Sprintf(msg, args...)
 }

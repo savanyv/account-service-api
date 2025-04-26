@@ -1,11 +1,10 @@
 package app
 
 import (
-	"log"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/savanyv/account-service-api/internal/config"
 	"github.com/savanyv/account-service-api/internal/config/database"
+	"github.com/savanyv/account-service-api/internal/delivery/routes"
 	"github.com/savanyv/account-service-api/internal/utils"
 )
 
@@ -21,22 +20,25 @@ func NewServer(config *config.Config) *Server {
 	}
 }
 
-func (s *Server) Run(cfg *config.Config) error {
-	// initialize logger
+func (s *Server) Run() error {
+	// Setup Logger
 	utils.InitLogger()
 
-	// initialize database
-	if err := database.ConnectDB(s.Config); err != nil {
-		log.Println(err)
-	}
-
-	// Start Server
-	if err := s.App.Listen(":8080"); err != nil {
-		utils.LogCritical("SERVER", "Failed to start server: %v", err)
-		log.Fatal(err)
+	// Setup Database Connection
+	_, err := database.ConnectDB(s.Config)
+	if err != nil {
+		utils.LogCritical("SERVER", "Failed to connect to database: %v", err)
 		return err
 	}
 
-	utils.LogInfo("SERVER", "Server started successfully")
+	// Setup Routes
+	routes.RegisterRoutes(s.App)
+
+	// Start Server
+	if err := s.App.Listen(":8080"); err != nil {
+		utils.LogError("SERVER", "Failed to start server: %v", err)
+		return err
+	}
+	utils.LogInfo("SERVER", "Server started on port 8080")
 	return nil
 }

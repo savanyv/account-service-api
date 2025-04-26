@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -14,9 +15,9 @@ type Config struct {
 	DBName     string
 }
 
-func Load() *Config {
+func LoadConfig() *Config {
 	if err := godotenv.Load(); err != nil {
-		panic(err)
+		log.Fatal("Error loading .env file")
 	}
 
 	return &Config{
@@ -29,10 +30,11 @@ func Load() *Config {
 }
 
 func getEnv(key string) string {
-	val, ok := os.LookupEnv(key)
+	value, ok := os.LookupEnv(key)
 	if !ok {
+		log.Fatalf("%s not set in environment", key)
 		return ""
 	}
 
-	return val
+	return value
 }

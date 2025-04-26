@@ -9,11 +9,11 @@ import (
 
 func main() {
 	// Load Config
-	cfg := config.Load()
+	config := config.LoadConfig()
 
 	// Start Server
-	server := app.NewServer(cfg)
-	if err := server.Run(cfg); err != nil {
+	server := app.NewServer(config)
+	if err := server.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
