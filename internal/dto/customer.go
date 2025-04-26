@@ -19,3 +19,13 @@ type DepositResponse struct {
 	AccountNo string `json:"account_no"`
 	Balance int64 `json:"balance"`
 }
+
+type WithdrawRequest struct {
+	AccountNo string `json:"account_no" validate:"required"`
+	Amount int64 `json:"amount" validate:"required"`
+}
+
+type WithdrawResponse struct {
+	AccountNo string `json:"account_no"`
+	Balance int64 `json:"balance"`
+}

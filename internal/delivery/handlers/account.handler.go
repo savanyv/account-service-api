@@ -80,3 +80,34 @@ func (h *AccountHandler) Deposit(c *fiber.Ctx) error {
 		"remark": "Deposit successful",
 	})
 }
+
+func (h *AccountHandler) Withdraw(c *fiber.Ctx) error {
+	var req dtos.WithdrawRequest
+	if err := c.BodyParser(&req); err != nil {
+		utils.LogError("HANDLER", "Failed to parse request body: %v", err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"remark": "Failed to parse request body",
+		})
+	}
+
+	if err := h.validator.Validate(&req); err != nil {
+		utils.LogError("HANDLER", "Failed to validate request: %v", err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"remark": "Failed to validate request",
+		})
+	}
+
+	resp, err := h.usecase.Withdraw(&req)
+	if err != nil {
+		utils.LogError("HANDLER", "Failed to withdraw: %v", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"remark": "Failed to withdraw",
+		})
+	}
+
+	utils.LogInfo("HANDLER", "Withdraw successful: %s", resp.AccountNo)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": resp,
+		"remark": "Withdraw successful",
+	})
+}

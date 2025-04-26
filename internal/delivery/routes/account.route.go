@@ -16,4 +16,5 @@ func accountRoutes(app fiber.Router) {
 
 	app.Post("/register", handler.Register)
 	app.Post("/deposit", handler.Deposit)
+	app.Post("/withdraw", handler.Withdraw)
 }
